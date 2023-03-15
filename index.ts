@@ -1,6 +1,7 @@
 import express from "express";
-import { middleware, Client } from "@line/bot-sdk";
+import { middleware, Client, MessageEvent, Message } from "@line/bot-sdk";
 import * as dotenv from "dotenv";
+import foods from "./food.json";
 
 dotenv.config();
 
@@ -14,35 +15,14 @@ const lineConfig = {
 
 const client = new Client(lineConfig);
 
-const food = [
-  "ข้าวกะเพราหมูไข่ดาว",
-  "ข้าวหมูกระเทียม",
-  "ข้าวไข่เจียวหมูสับผัดกะเพรา",
-  "ข้าวไข่ข้นปูซอสกะเพรา",
-  "ข้าวคะน้าหมูกรอบ",
-  "ยำวุ้นเส้นหมูสับ",
-  "ยำปลากระป๋อง",
-  "ปีกไก่ทอดน้ำปลา",
-  "ชีสเบอร์เกอร์",
-  "ไก่ทอดกระเทียม",
-];
-
 app.post("/webhook", middleware(lineConfig), (req, res) => {
   try {
-    const { events }: any = req.body;
+    const { events }: { events: MessageEvent[] } = req.body;
 
     console.log(events);
 
-    events.map((event: any) => {
-      if (event.type !== "message" || event.message.type !== "text")
-        return null;
-      client.replyMessage(event.replyToken, {
-        type: "text",
-        text:
-          event.message.text.toLowerCase() === "หิว"
-            ? food[Math.floor(Math.random() * food.length)]
-            : "สวัสดีครับ ถ้าหิว พิมพ์ `หิว` และผมจะแนะนํารายการอาหารอร่อย ๆ ให้ครับ",
-      });
+    events.map((event) => {
+      handleEvent(event);
     });
 
     res.status(200).send("OK");
@@ -51,5 +31,42 @@ app.post("/webhook", middleware(lineConfig), (req, res) => {
     res.status(500).end();
   }
 });
+
+async function handleEvent(event: MessageEvent) {
+  if (event.type !== "message" || event.message.type !== "text") return null;
+
+  const food = foods[Math.floor(Math.random() * foods.length)];
+
+  client.replyMessage(
+    event.replyToken,
+    handleMessage(event.message.text, food)
+  );
+}
+
+function handleMessage(
+  message: string,
+  food: { name: string; image: string }
+): Message[] {
+  if (message === "หิว") {
+    return [
+      {
+        type: "text",
+        text: food.name,
+      },
+      {
+        type: "image",
+        originalContentUrl: food.image,
+        previewImageUrl: food.image,
+      },
+    ];
+  } else {
+    return [
+      {
+        type: "text",
+        text: " สวัสดีครับ ถ้าหิว พิมพ์ `หิว` และผมจะแนะนํารายการอาหารอร่อย ๆ ให้ครับ",
+      },
+    ];
+  }
+}
 
 app.listen(PORT, () => console.log(`Listening at port ${PORT}`));
