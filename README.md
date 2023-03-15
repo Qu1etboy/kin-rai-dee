@@ -1,4 +1,6 @@
-# Line Chatbot Demo
+# Kin Rai Dee
+
+A line chatbot to help you choose what food you want to eat. Just tell the bot "หิว" and it will send you a random food for you
 
 ## Tools
 
@@ -10,7 +12,7 @@
 
 ## Getting Started
 
-Set up `.env`, get tokens from line developer console.
+Set up `.env`, you can get tokens from line developer console.
 
 ```bash
 CHANNEL_ACCESS_TOKEN=

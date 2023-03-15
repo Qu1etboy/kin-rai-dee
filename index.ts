@@ -14,6 +14,19 @@ const lineConfig = {
 
 const client = new Client(lineConfig);
 
+const food = [
+  "ข้าวกะเพราหมูไข่ดาว",
+  "ข้าวหมูกระเทียม",
+  "ข้าวไข่เจียวหมูสับผัดกะเพรา",
+  "ข้าวไข่ข้นปูซอสกะเพรา",
+  "ข้าวคะน้าหมูกรอบ",
+  "ยำวุ้นเส้นหมูสับ",
+  "ยำปลากระป๋อง",
+  "ปีกไก่ทอดน้ำปลา",
+  "ชีสเบอร์เกอร์",
+  "ไก่ทอดกระเทียม",
+];
+
 app.post("/webhook", middleware(lineConfig), (req, res) => {
   try {
     const { events }: any = req.body;
@@ -26,7 +39,9 @@ app.post("/webhook", middleware(lineConfig), (req, res) => {
       client.replyMessage(event.replyToken, {
         type: "text",
         text:
-          event.message.text.toLowerCase() === "ping" ? "pong" : "Hi I'm a bot",
+          event.message.text.toLowerCase() === "หิว"
+            ? food[Math.floor(Math.random() * food.length)]
+            : "สวัสดีครับ ถ้าหิว พิมพ์ `หิว` และผมจะแนะนํารายการอาหารอร่อย ๆ ให้ครับ",
       });
     });
 
