@@ -37,7 +37,7 @@ async function handleEvent(event: MessageEvent) {
 
   const food = foods[Math.floor(Math.random() * foods.length)];
 
-  client.replyMessage(
+  await client.replyMessage(
     event.replyToken,
     handleMessage(event.message.text, food)
   );
