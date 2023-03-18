@@ -35,19 +35,15 @@ app.post("/webhook", middleware(lineConfig), (req, res) => {
 async function handleEvent(event: MessageEvent) {
   if (event.type !== "message" || event.message.type !== "text") return null;
 
-  const food = foods[Math.floor(Math.random() * foods.length)];
-
   await client.replyMessage(
     event.replyToken,
-    handleMessage(event.message.text, food)
+    handleMessage(event.message.text)
   );
 }
 
-function handleMessage(
-  message: string,
-  food: { name: string; image: string }
-): Message[] {
+function handleMessage(message: string): Message[] {
   if (message === "หิว") {
+    const food = getRandomFood();
     return [
       {
         type: "text",
@@ -67,6 +63,10 @@ function handleMessage(
       },
     ];
   }
+}
+
+function getRandomFood() {
+  return foods[Math.floor(Math.random() * foods.length)];
 }
 
 app.listen(PORT, () => console.log(`Listening at port ${PORT}`));
